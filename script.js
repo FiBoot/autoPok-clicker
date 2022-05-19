@@ -16,7 +16,11 @@ const JOHTO_RANKING = [
 	166, 158, 225, 152, 177, 155, 179, 201, 204, 223, 173, 174, 188, 167, 163, 238, 218, 183, 175, 246, 242, 220, 161,
 	165, 187, 172, 194, 236, 235, 191, 213,
 ];
-const AUTOCLICKER_ADDBTN_ID = 'AUTOCLICKER_ADDBTN_ID';
+const IDS = {
+	POKE_ADDIN: 'POKE_ADDIN',
+	AUTO_BTN: 'AUTO_BTN',
+	TURBO_BTN: 'AUTO_BTN',
+};
 let autoClickerActivated = false;
 let clickerInterval;
 
@@ -28,9 +32,10 @@ function log(message) {
 	console.log(`[${formatDate} ${formatTime}] ` + `%cAutoClicker: ${message}.`, logStyle);
 }
 
-function triggerAutoClick(event, timespan) {
+function triggerAutoClick(timespan) {
 	autoClickerActivated = !autoClickerActivated;
-	event.srcElement.style.color = autoClickerActivated ? '#3F1' : '#FFF';
+	document.querySelector(`#${IDS.POKE_ADDIN} #${IDS.AUTO_BTN}`).style.color = autoClickerActivated ? '#3F1' : '#FFF';
+	document.querySelector(`#${IDS.POKE_ADDIN} #${IDS.TURBO_BTN}`).style.color = autoClickerActivated ? '#3F1' : '#FFF';
 	clearInterval(clickerInterval);
 	log(autoClickerActivated ? `started at ${1000 / timespan} click/sec` : `stopped`);
 	if (autoClickerActivated) {
@@ -94,6 +99,7 @@ function setUpRanking(event) {
 function main() {
 	// MAIN DIV
 	const mainDiv = document.createElement('div');
+	mainDiv.id = IDS.POKE_ADDIN;
 	mainDiv.style.cssText = `
         position: absolute;
         top: 0;
@@ -101,11 +107,10 @@ function main() {
 	`;
 	document.body.appendChild(mainDiv);
 
-	// ADD BTN
-	const addBtn = document.createElement('button');
-	addBtn.innerHTML = 'Rank';
-	addBtn.id = AUTOCLICKER_ADDBTN_ID;
-	addBtn.style.cssText = `
+	// RANK BTN
+	const rankBtn = document.createElement('button');
+	rankBtn.innerHTML = 'Rank';
+	rankBtn.style.cssText = `
 		margin-right: 6px;
         padding: 6px 16px;
         border: none;
@@ -115,11 +120,12 @@ function main() {
         font-size: 16px;
         color: #FFF;
 	`;
-	addBtn.onclick = (event) => setUpRanking(event);
-	mainDiv.append(addBtn);
+	rankBtn.onclick = (event) => setUpRanking(event);
+	mainDiv.append(rankBtn);
 
 	// AUTO BTN
 	const autoBtn = document.createElement('button');
+	autoBtn.id = IDS.AUTO_BTN;
 	autoBtn.innerHTML = 'Auto';
 	autoBtn.style.cssText = `
 		margin-right: 6px;
@@ -136,6 +142,7 @@ function main() {
 
 	// TURBO BTN
 	const turboBtn = document.createElement('button');
+	turboBtn.id = IDS.TURBO_BTN;
 	turboBtn.innerHTML = 'TURBO';
 	turboBtn.style.cssText = `
 		margin-right: 6px;
