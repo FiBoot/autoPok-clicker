@@ -1,11 +1,8 @@
 'use strict';
 
 // const RANK_COLORS = ['#DFFF00', '#DFFF00', '#FF7F50', '#DE3163', '#9FE2BF', '#40E0D0', '#6495ED', '#CCCCFF'];
-const CPS_LIMITS = {
-	MIN: 1,
-	MAX: 1000,
-};
-const DEFAULT_CPS = 500;
+const TIMESPANS = [1, 2, 4, 5, 8, 10];
+const DEFAULT_TIMESPAN = TIMESPANS[1];
 const KANTO_RANKING = [
 	130, 36, 103, 59, 40, 26, 143, 89, 131, 80, 126, 115, 55, 125, 127, 123, 110, 112, 128, 73, 38, 78, 97, 150, 121, 134,
 	42, 87, 6, 68, 76, 3, 9, 149, 71, 114, 62, 31, 45, 146, 34, 119, 137, 91, 136, 142, 145, 35, 22, 108, 18, 49, 144, 24,
@@ -101,15 +98,7 @@ function setUpRanking(event) {
 }
 
 function main() {
-	// TIMESPAN calc
-	const clickPerSeconds =
-		CLICK_PER_SECONDS < CPS_LIMITS.MAX
-			? CLICK_PER_SECONDS > CPS_LIMITS.MIN
-				? CLICK_PER_SECONDS
-				: DEFAULT_CPS
-			: DEFAULT_CPS;
-
-	const timespan = Math.round(CPS_LIMITS.MAX / clickPerSeconds);
+	const timespan = TIMESPANS.includes(TIMESPAN) ? TIMESPAN : DEFAULT_TIMESPAN;
 
 	// MAIN DIV
 	const mainDiv = document.createElement('div');
@@ -153,5 +142,5 @@ function main() {
 	autoBtn.onclick = (event) => triggerAutoClick(event, timespan);
 	mainDiv.append(autoBtn);
 
-	log(`component added, timespan: ${timespan}`);
+	log(`component added (timespan: ${timespan})`);
 }
