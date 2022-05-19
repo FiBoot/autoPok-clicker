@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         pokemonclick addin
 // @namespace    http://tampermonkey.net/
-// @version      2.4
+// @version      2.5
 // @author       FiBoot
 // @match        https://www.pokeclicker.com/
 // @icon         https://www.google.com/s2/favicons?sz=64&domain=pokeclicker.com

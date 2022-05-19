@@ -18,6 +18,14 @@ const JOHTO_RANKING = [
 	166, 158, 225, 152, 177, 155, 179, 201, 204, 223, 173, 174, 188, 167, 163, 238, 218, 183, 175, 246, 242, 220, 161,
 	165, 187, 172, 194, 236, 235, 191, 213,
 ];
+const HOENN_RANKING = [
+	289, 336, 324, 342, 350, 260, 332, 384, 323, 335, 365, 257, 357, 340, 359, 367, 338, 337, 368, 275, 286, 317, 352,
+	362, 297, 383, 382, 284, 314, 313, 295, 373, 334, 358, 272, 348, 346, 319, 310, 330, 376, 288, 344, 262, 254, 321,
+	277, 282, 354, 326, 351, 364, 315, 369, 327, 264, 256, 385, 279, 259, 311, 379, 303, 291, 301, 381, 331, 312, 302,
+	378, 377, 380, 320, 294, 267, 308, 274, 253, 306, 341, 366, 356, 386, 322, 271, 258, 255, 372, 345, 285, 305, 328,
+	287, 363, 269, 316, 375, 361, 325, 318, 329, 299, 347, 252, 353, 339, 333, 309, 300, 304, 343, 283, 370, 293, 276,
+	360, 290, 307, 371, 296, 261, 281, 278, 273, 270, 263, 374, 298, 265, 355, 268, 266, 280, 349, 292,
+];
 const IDS = {
 	POKE_ADDIN: 'POKE_ADDIN',
 };
@@ -76,6 +84,9 @@ function setUpRanking(event) {
 		} else if (pokemonNumber <= KANTO_RANKING.length + JOHTO_RANKING.length) {
 			rankColor = '#FFBF00';
 			pokemonRank = JOHTO_RANKING.indexOf(parseInt(pokemonNumber)) + 1;
+		} else if (pokemonNumber <= KANTO_RANKING.length + JOHTO_RANKING.length + HOENN_RANKING.length) {
+			rankColor = '$FF7F50';
+			pokemonRank = HOENN_RANKING.indexOf(parseInt(pokemonNumber)) + 1;
 		}
 
 		if (pokemonRank > 0) {
@@ -90,10 +101,10 @@ function setUpRanking(event) {
 			event.srcElement.innerHTML = 'Rank';
 			event.srcElement.style.color = '#FFF';
 		}, 1000 * 5); // 5sec
-		log(`${nodes.length} rank successfully added`);
+		log(`${nodes.length} ranks successfully added`);
 	} else {
 		event.srcElement.style.color = '#F31';
-		log(`OPEN BREEDING LIST ONCE FIRST !`);
+		log(`Can't find list -> Open Hatchery List once first !`);
 	}
 }
 
