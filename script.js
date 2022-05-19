@@ -85,8 +85,10 @@ function setUpRanking(event) {
 	}
 
 	if (nodes.length) {
+		event.srcElement.innerHTML = nodes.length;
 		event.srcElement.style.color = '#3F1';
 		setTimeout(() => {
+			event.srcElement.innerHTML = 'Rank';
 			event.srcElement.style.color = '#FFF';
 		}, 1000 * 5); // 5sec
 		log(`${nodes.length} rank successfully added`);
