@@ -85,7 +85,7 @@ function setUpRanking(event) {
 			rankColor = '#FFBF00';
 			pokemonRank = JOHTO_RANKING.indexOf(parseInt(pokemonNumber)) + 1;
 		} else if (pokemonNumber <= KANTO_RANKING.length + JOHTO_RANKING.length + HOENN_RANKING.length) {
-			rankColor = '$FF7F50';
+			rankColor = '#FF7F50';
 			pokemonRank = HOENN_RANKING.indexOf(parseInt(pokemonNumber)) + 1;
 		}
 
