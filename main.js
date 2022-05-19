@@ -8,5 +8,3 @@
 // @grant        none
 // @require      https://raw.githubusercontent.com/FiBoot/pokeclicker-addin/main/script.js
 // ==/UserScript==
-
-main();

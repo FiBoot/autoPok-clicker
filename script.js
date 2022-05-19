@@ -32,10 +32,11 @@ function log(message) {
 	console.log(`[${formatDate} ${formatTime}] ` + `%cAutoClicker: ${message}.`, logStyle);
 }
 
-function triggerAutoClick(timespan) {
+function triggerAutoClick(event, timespan) {
 	autoClickerActivated = !autoClickerActivated;
-	document.querySelector(`#${IDS.POKE_ADDIN} #${IDS.AUTO_BTN}`).style.color = autoClickerActivated ? '#3F1' : '#FFF';
-	document.querySelector(`#${IDS.POKE_ADDIN} #${IDS.TURBO_BTN}`).style.color = autoClickerActivated ? '#3F1' : '#FFF';
+	document.querySelector(`#${IDS.POKE_ADDIN} #${IDS.AUTO_BTN}`).style.color = '#FFF';
+	document.querySelector(`#${IDS.POKE_ADDIN} #${IDS.TURBO_BTN}`).style.color = '#FFF';
+	autoClickerActivated ? (event.srcElement.style.color = '#3F1') : null;
 	clearInterval(clickerInterval);
 	log(autoClickerActivated ? `started at ${1000 / timespan} click/sec` : `stopped`);
 	if (autoClickerActivated) {
@@ -161,3 +162,5 @@ function main() {
 
 	log(`component added`);
 }
+
+main();
