@@ -8,3 +8,6 @@
 // @grant        none
 // @require      https://raw.githubusercontent.com/FiBoot/pokeclicker-addin/main/script.js
 // ==/UserScript==
+
+// CLICK/SEC [1-1000]
+const CLICK_PER_SECONDS = 500;

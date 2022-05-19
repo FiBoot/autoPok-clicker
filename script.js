@@ -1,6 +1,11 @@
 'use strict';
 
 // const RANK_COLORS = ['#DFFF00', '#DFFF00', '#FF7F50', '#DE3163', '#9FE2BF', '#40E0D0', '#6495ED', '#CCCCFF'];
+const CLICK_PER_SEC_LIMIT = {
+	MIN: 1,
+	MAX: 1000,
+};
+const DEFAULT_TIMESPAN = 2;
 const KANTO_RANKING = [
 	130, 36, 103, 59, 40, 26, 143, 89, 131, 80, 126, 115, 55, 125, 127, 123, 110, 112, 128, 73, 38, 78, 97, 150, 121, 134,
 	42, 87, 6, 68, 76, 3, 9, 149, 71, 114, 62, 31, 45, 146, 34, 119, 137, 91, 136, 142, 145, 35, 22, 108, 18, 49, 144, 24,
@@ -18,8 +23,6 @@ const JOHTO_RANKING = [
 ];
 const IDS = {
 	POKE_ADDIN: 'POKE_ADDIN',
-	AUTO_BTN: 'AUTO_BTN',
-	TURBO_BTN: 'AUTO_BTN',
 };
 let autoClickerActivated = false;
 let clickerInterval;
@@ -34,13 +37,11 @@ function log(message) {
 
 function triggerAutoClick(event, timespan) {
 	autoClickerActivated = !autoClickerActivated;
-	document.querySelector(`#${IDS.POKE_ADDIN} #${IDS.AUTO_BTN}`).style.color = '#FFF';
-	document.querySelector(`#${IDS.POKE_ADDIN} #${IDS.TURBO_BTN}`).style.color = '#FFF';
-	autoClickerActivated ? (event.srcElement.style.color = '#3F1') : null;
+	event.srcElement.style.color = autoClickerActivated ? '#3F1' : '#FFF';
 	clearInterval(clickerInterval);
 	log(autoClickerActivated ? `started at ${1000 / timespan} click/sec` : `stopped`);
 	if (autoClickerActivated) {
-		clickerInterval = setInterval(() => autoClick(event, timespan), timespan);
+		clickerInterval = setInterval(() => autoClick(event), timespan);
 	}
 }
 
@@ -100,6 +101,9 @@ function setUpRanking(event) {
 }
 
 function main() {
+	// calc timespan from CLICK_PER_SECONDS set on main (or DEFAULT_TIMESPAN)
+	const timespan = CLICK_PER_SECONDS ? Math.round(1000 / CLICK_PER_SECONDS) : DEFAULT_TIMESPAN;
+
 	// MAIN DIV
 	const mainDiv = document.createElement('div');
 	mainDiv.id = IDS.POKE_ADDIN;
@@ -128,7 +132,6 @@ function main() {
 
 	// AUTO BTN
 	const autoBtn = document.createElement('button');
-	autoBtn.id = IDS.AUTO_BTN;
 	autoBtn.innerHTML = 'Auto';
 	autoBtn.style.cssText = `
 		margin-right: 6px;
@@ -140,25 +143,8 @@ function main() {
         font-size: 16px;
         color: #FFF;
 	`;
-	autoBtn.onclick = (event) => triggerAutoClick(event, 10);
+	autoBtn.onclick = (event) => triggerAutoClick(event, timespan);
 	mainDiv.append(autoBtn);
-
-	// TURBO BTN
-	const turboBtn = document.createElement('button');
-	turboBtn.id = IDS.TURBO_BTN;
-	turboBtn.innerHTML = 'TURBO';
-	turboBtn.style.cssText = `
-		margin-right: 6px;
-        padding: 6px 16px;
-        border: none;
-        border-radius: 6px;
-        background-color: #555;
-        font-family: pokemonFont,"Helvetica Neue",sans-serif;
-        font-size: 16px;
-        color: #FFF;
-	`;
-	turboBtn.onclick = (event) => triggerAutoClick(event, 1);
-	mainDiv.append(turboBtn);
 
 	log(`component added`);
 }
