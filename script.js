@@ -1,6 +1,6 @@
 'use strict';
 
-// const RANK_COLORS = ['#DFFF00', '#DFFF00', '#FF7F50', '#DE3163', '#9FE2BF', '#40E0D0', '#6495ED', '#CCCCFF'];
+// const RANK_COLORS = ['#DFFF00', '#FFBF00', '#FF7F50', '#DE3163', '#9FE2BF', '#40E0D0', '#6495ED', '#CCCCFF'];
 const TIMESPANS = [1, 2, 4, 5, 8, 10];
 const DEFAULT_TIMESPAN = TIMESPANS[1];
 const KANTO_RANKING = [
@@ -25,6 +25,13 @@ const HOENN_RANKING = [
 	378, 377, 380, 320, 294, 267, 308, 274, 253, 306, 341, 366, 356, 386, 322, 271, 258, 255, 372, 345, 285, 305, 328,
 	287, 363, 269, 316, 375, 361, 325, 318, 329, 299, 347, 252, 353, 339, 333, 309, 300, 304, 343, 283, 370, 293, 276,
 	360, 290, 307, 371, 296, 261, 281, 278, 273, 270, 263, 374, 298, 265, 355, 268, 266, 280, 349, 292,
+];
+const SINNOH = [
+	490, 489, 454, 465, 468, 463, 430, 460, 423, 469, 467, 416, 455, 466, 493, 437, 448, 450, 395, 473, 389, 483, 464,
+	405, 435, 474, 419, 407, 487, 484, 442, 485, 462, 392, 426, 486, 409, 452, 417, 476, 441, 445, 478, 472, 481, 424,
+	461, 413, 475, 482, 400, 398, 479, 457, 421, 471, 414, 428, 432, 388, 429, 402, 492, 394, 470, 453, 391, 446, 480,
+	488, 491, 477, 459, 422, 404, 387, 427, 411, 393, 418, 434, 425, 456, 397, 390, 449, 444, 408, 431, 399, 451, 458,
+	433, 420, 406, 403, 443, 447, 410, 396, 436, 438, 439, 412, 415, 401, 440,
 ];
 const IDS = {
 	POKE_ADDIN: 'POKE_ADDIN',
@@ -87,6 +94,9 @@ function setUpRanking(event) {
 		} else if (pokemonNumber <= KANTO_RANKING.length + JOHTO_RANKING.length + HOENN_RANKING.length) {
 			rankColor = '#FF7F50';
 			pokemonRank = HOENN_RANKING.indexOf(parseInt(pokemonNumber)) + 1;
+		} else if (pokemonNumber <= KANTO_RANKING.length + JOHTO_RANKING.length + HOENN_RANKING.length + SINNOH.length) {
+			rankColor = '#DE3163';
+			pokemonRank = SINNOH.indexOf(parseInt(pokemonNumber)) + 1;
 		}
 
 		if (pokemonRank > 0) {
