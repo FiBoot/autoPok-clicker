@@ -11,3 +11,5 @@
 
 // CLICK/SEC [1-1000]
 const CLICK_PER_SECONDS = 500;
+
+main();

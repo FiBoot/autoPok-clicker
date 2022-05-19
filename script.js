@@ -148,5 +148,3 @@ function main() {
 
 	log(`component added`);
 }
-
-main();
