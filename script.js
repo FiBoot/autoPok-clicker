@@ -55,6 +55,7 @@ const POKEMON_RANKING = [
 	412.2, 412.1, 235, 401, 13, 10, 268, 266, 665, 280, 129, 14, 113, 11, 746, 50.01, 767, 191, 790, 50, 213, 349, 292,
 	789, 440,
 ];
+let dockShortcutAdded = false;
 let autoClickerActivated = false;
 let clickerInterval;
 
@@ -91,6 +92,23 @@ function setPokemonRank(node, rank) {
 	if (matches && matches.length > 1) {
 		span.innerHTML = `${matches[1]} <b style="color: ${COLORS.GREEN}">#${rank}</b>`;
 	}
+}
+
+function addDockShortcut() {
+	if (dockShortcutAdded) return;
+	const dockBtn = document.createElement('button');
+	dockBtn.innerHTML = 'Dock';
+	dockBtn.classList = 'btn btn-block btn-primary m-0';
+	dockBtn.onclick = (event) => {
+		document.querySelector('[data-town=Dock]').dispatchEvent(new Event('click'));
+	};
+	const tr = document.createElement('tr');
+	const td = document.createElement('td');
+	td.className = 'p-0';
+	td.append(dockBtn);
+	tr.append(td);
+	document.querySelector('#shortcutsBody > table > tbody').append(tr);
+	dockShortcutAdded = true;
 }
 
 function setUpRanking(event) {
@@ -147,7 +165,10 @@ function main() {
         font-size: 16px;
         color: #FFF;
 	`;
-	rankBtn.onclick = (event) => setUpRanking(event);
+	rankBtn.onclick = (event) => {
+		addDockShortcut();
+		setUpRanking(event);
+	};
 	mainDiv.append(rankBtn);
 
 	// AUTO BTN
