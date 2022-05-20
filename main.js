@@ -9,8 +9,11 @@
 // @require      https://raw.githubusercontent.com/FiBoot/pokeclicker-addin/main/script.js
 // ==/UserScript==
 
-// RANKING
+// RANKING SHEET
 // https://docs.google.com/spreadsheets/d/1rgK21U5RtCrozSgOWSBlOW9VS0j_nm1UmESSHVstHEU/edit?usp=sharing
+
+// POKECLICK WIKI
+// https://pokeclicker.miraheze.org/wiki
 
 // TIMESPAN -> CLICK PER SECONDS
 //  1       -> 1000
