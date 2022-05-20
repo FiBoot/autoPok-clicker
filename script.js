@@ -1021,7 +1021,7 @@ function addDockShortcut() {
 	if (dockShortcutAdded) return;
 	const dockBtn = document.createElement('button');
 	dockBtn.innerHTML = 'Dock';
-	dockBtn.classList = 'btn btn-block btn-primary m-0';
+	dockBtn.classList = 'btn btn-block btn-info m-0';
 	dockBtn.onclick = (event) => {
 		document.querySelector('[data-town=Dock]').dispatchEvent(new Event('click'));
 	};
