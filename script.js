@@ -12,9 +12,19 @@ const DOM_IDS = {
 	TURBO_BTN: 'TURBO_BTN',
 	DOCK_BTN: 'DOCK_BTN',
 };
+const BTN_STYLE = `
+	margin-right: 6px;
+	padding: 6px 16px;
+	border: none;
+	border-radius: 6px;
+	background-color: #555;
+	font-family: pokemonFont,"Helvetica Neue",sans-serif;
+	font-size: 16px;
+	color: #FFF;
+`;
 const CLICK_TIMESPAN = 2;
 const BREED_TIMESPAN = 1000;
-const MAX_CLICK_INTERVAL_COUNT = 10;
+const MAX_BREED_QUEUE = 4;
 let autoBreedActivated = false;
 let autoClickerActivated = false;
 let breedInterval, clickInterval;
@@ -29,8 +39,24 @@ function log(message, color = COLORS.ORANGE) {
 
 function triggerClick(elem) {
 	// inib error
-	if (!elem) return; // log(`Error: element not found for click`, COLORS.RED);
-	elem.click();
+	return elem ? elem.click() : null;
+}
+
+function autoBreed() {
+	const nodes = document.querySelectorAll('#breeding-pokemon li.eggSlot:not(.disabled)');
+	if (!nodes.length) {
+		return COLORS.RED;
+	}
+	if (document.querySelectorAll('#hatcheryQueue div').length >= MAX_BREED_QUEUE) {
+		return COLORS.ORANGE;
+	}
+	// search the first visible pokemon
+	for (let node of nodes) {
+		if (node.style.display !== 'none') {
+			triggerClick(node.querySelector('a.overlay'));
+			return COLORS.GREEN;
+		}
+	}
 }
 
 function triggerAutoBreed(event) {
@@ -40,18 +66,9 @@ function triggerAutoBreed(event) {
 	log(autoBreedActivated ? `Auto-breed start at ${1000 / BREED_TIMESPAN} breed/sec` : `stopped`);
 	if (autoBreedActivated) {
 		breedInterval = setInterval(() => {
-			const nodes = document.querySelectorAll('#breeding-pokemon li.eggSlot:not(.disabled)');
-			if (!nodes.length) {
-				event.srcElement.style.color = COLORS.RED;
-			}
-			// search the first visible pokemon
-			for (let node of nodes) {
-				if (node.style.display !== 'none') {
-					event.srcElement.style.color = COLORS.GREEN;
-					return triggerClick(node.querySelector('a.overlay'));
-				}
-			}
+			event.srcElement.style.color = autoBreed();
 		}, BREED_TIMESPAN);
+		event.srcElement.style.color = autoBreed();
 	}
 }
 
@@ -114,17 +131,6 @@ function setUpRanking(event) {
 }
 
 function main() {
-	const btnStyle = `
-		margin-right: 6px;
-		padding: 6px 16px;
-		border: none;
-		border-radius: 6px;
-		background-color: #555;
-		font-family: pokemonFont,"Helvetica Neue",sans-serif;
-		font-size: 16px;
-		color: #FFF;
-	`;
-
 	// MAIN DIV
 	const mainDiv = document.createElement('div');
 	mainDiv.id = DOM_IDS.MAIN_DIV;
@@ -138,7 +144,7 @@ function main() {
 	// RANK BTN
 	const rankBtn = document.createElement('button');
 	rankBtn.innerHTML = 'Rank';
-	rankBtn.style.cssText = btnStyle;
+	rankBtn.style.cssText = BTN_STYLE;
 	rankBtn.onclick = (event) => {
 		addDockShortcut();
 		setUpRanking(event);
@@ -148,7 +154,7 @@ function main() {
 	// BREED BTN
 	const breedBtn = document.createElement('button');
 	breedBtn.innerHTML = 'Breed';
-	breedBtn.style.cssText = btnStyle;
+	breedBtn.style.cssText = BTN_STYLE;
 	breedBtn.onclick = (event) => triggerAutoBreed(event);
 	mainDiv.append(breedBtn);
 
@@ -156,7 +162,7 @@ function main() {
 	const autoBtn = document.createElement('button');
 	autoBtn.id = DOM_IDS.AUTO_BTN;
 	autoBtn.innerHTML = 'Auto';
-	autoBtn.style.cssText = btnStyle;
+	autoBtn.style.cssText = BTN_STYLE;
 	autoBtn.onclick = (event) => triggerAutoClick(event);
 	mainDiv.append(autoBtn);
 
