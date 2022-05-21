@@ -8,7 +8,7 @@ const COLORS = {
 };
 const TIMESPANS = [1, 2, 4, 5, 8, 10];
 const DEFAULT_TIMESPAN = TIMESPANS[1];
-const BREED_TIMESPAN = 2000;
+const BREED_TIMESPAN = 1000;
 const POKEMON_RANKING = [
 	'490',
 	'130',
@@ -1007,7 +1007,6 @@ function triggerAutoBreed(event) {
 		breedInterval = setInterval(() => {
 			const nodes = document.querySelectorAll('#breeding-pokemon li.eggSlot:not(.disabled)');
 			if (!nodes.length) {
-				log('No breedable available');
 				event.srcElement.style.color = COLORS.RED;
 			}
 			// search the first visible pokemon
