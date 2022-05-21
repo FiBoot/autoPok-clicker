@@ -994,7 +994,7 @@ function log(message, color = COLORS.ORANGE) {
 
 function triggerClick(elem) {
 	// inib error
-	if (!elem) return log(`Error: element not found for click`, COLORS.RED);
+	if (!elem) return; // log(`Error: element not found for click`, COLORS.RED);
 	elem.click();
 }
 
