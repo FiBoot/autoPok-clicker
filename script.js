@@ -8,6 +8,7 @@ const COLORS = {
 };
 const TIMESPANS = [1, 2, 4, 5, 8, 10];
 const DEFAULT_TIMESPAN = TIMESPANS[1];
+const BREED_TIMESPAN = 2000;
 const POKEMON_RANKING = [
 	'490',
 	'130',
@@ -979,33 +980,54 @@ const POKEMON_RANKING = [
 	'440',
 ];
 let dockShortcutAdded = false;
+let autoBreedActivated = false;
 let autoClickerActivated = false;
-let clickerInterval;
+let breedInterval, clickInterval;
 
-function log(message) {
+function log(message, color = COLORS.ORANGE) {
 	const date = new Date();
 	const formatDate = `${date.getDate()}/${date.getMonth() + 1}/${date.getFullYear()}`;
 	const formatTime = `${date.getHours()}:${date.getMinutes()}:${date.getSeconds()}`;
-	const logStyle = `color: ${COLORS.ORANGE}; font-weight: bold;`;
-	console.log(`[${formatDate} ${formatTime}] ` + `%cAutoClicker: ${message}.`, logStyle);
+	const logStyle = `color: ${color}; font-weight: bold;`;
+	console.log(`[${formatDate} ${formatTime}] %c${message}.`, logStyle);
+}
+
+function triggerClick(elem) {
+	// inib error
+	if (!elem) return log(`Error: element not found for click`, COLORS.RED);
+	elem.click();
+}
+
+function triggerAutoBreed(event) {
+	autoBreedActivated = !autoBreedActivated;
+	event.srcElement.style.color = autoBreedActivated ? COLORS.GREEN : COLORS.WHITE;
+	clearInterval(breedInterval);
+	log(autoBreedActivated ? `Auto-breed start at ${1000 / BREED_TIMESPAN} breed/sec` : `stopped`);
+	if (autoBreedActivated) {
+		breedInterval = setInterval(() => {
+			const nodes = document.querySelectorAll('#breeding-pokemon li.eggSlot:not(.disabled)');
+			if (!nodes.length) {
+				log('No breedable available');
+				event.srcElement.style.color = COLORS.RED;
+			}
+			// search the first visible pokemon
+			for (let node of nodes) {
+				if (node.style.display !== 'none') {
+					event.srcElement.style.color = COLORS.GREEN;
+					return triggerClick(node.querySelector('a.overlay'));
+				}
+			}
+		}, BREED_TIMESPAN);
+	}
 }
 
 function triggerAutoClick(event, timespan) {
 	autoClickerActivated = !autoClickerActivated;
 	event.srcElement.style.color = autoClickerActivated ? COLORS.GREEN : COLORS.WHITE;
-	clearInterval(clickerInterval);
-	log(autoClickerActivated ? `started at ${1000 / timespan} click/sec` : `stopped`);
+	clearInterval(clickInterval);
+	log(autoClickerActivated ? `Auto-click start at ${1000 / timespan} click/sec` : `stopped`);
 	if (autoClickerActivated) {
-		clickerInterval = setInterval(() => autoClick(event), timespan);
-	}
-}
-
-function autoClick(event) {
-	try {
-		document.querySelector('img.enemy').click();
-	} catch (error) {
-		// log(`error: ${error.message}`);
-		// triggerAutoClick(event);
+		clickInterval = setInterval(() => triggerClick(document.querySelector('#battleContainer img.enemy')), timespan);
 	}
 }
 
@@ -1075,38 +1097,38 @@ function main() {
 	`;
 	document.body.appendChild(mainDiv);
 
+	const btnStyle = `
+		margin-right: 6px;
+		padding: 6px 16px;
+		border: none;
+		border-radius: 6px;
+		background-color: #555;
+		font-family: pokemonFont,"Helvetica Neue",sans-serif;
+		font-size: 16px;
+		color: #FFF;
+	`;
+
 	// RANK BTN
 	const rankBtn = document.createElement('button');
 	rankBtn.innerHTML = 'Rank';
-	rankBtn.style.cssText = `
-		margin-right: 6px;
-        padding: 6px 16px;
-        border: none;
-        border-radius: 6px;
-        background-color: #555;
-        font-family: pokemonFont,"Helvetica Neue",sans-serif;
-        font-size: 16px;
-        color: #FFF;
-	`;
+	rankBtn.style.cssText = btnStyle;
 	rankBtn.onclick = (event) => {
 		addDockShortcut();
 		setUpRanking(event);
 	};
 	mainDiv.append(rankBtn);
 
+	// BREED BTN
+	const breedBtn = document.createElement('button');
+	breedBtn.innerHTML = 'Breed';
+	breedBtn.style.cssText = btnStyle;
+	breedBtn.onclick = (event) => triggerAutoBreed(event);
+	mainDiv.append(breedBtn);
+
 	// AUTO BTN
 	const autoBtn = document.createElement('button');
 	autoBtn.innerHTML = 'Auto';
-	autoBtn.style.cssText = `
-		margin-right: 6px;
-        padding: 6px 16px;
-        border: none;
-        border-radius: 6px;
-        background-color: #555;
-        font-family: pokemonFont,"Helvetica Neue",sans-serif;
-        font-size: 16px;
-        color: #FFF;
-	`;
+	autoBtn.style.cssText = btnStyle;
 	autoBtn.onclick = (event) => triggerAutoClick(event, timespan);
 	mainDiv.append(autoBtn);
 
