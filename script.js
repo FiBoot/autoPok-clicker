@@ -31,6 +31,7 @@ const BTN_STYLE = `
 let autoBreedActivated = false;
 let autoClickerActivated = false;
 let autoDungeonClearActivated = false;
+let averageDungeonClearSteps;
 let breedInterval, clickInterval;
 
 function log(message, color = COLORS.ORANGE) {
@@ -125,7 +126,11 @@ function autoDungeonClear(
 		}
 		const bossBtn = document.querySelector('#battleContainer button.dungeon-button');
 		if (bossBtn) {
+			averageDungeonClearSteps.push(steps);
+			const rawAverage = averageDungeonClearSteps.reduce((a, b) => a + b, 0) / averageDungeonClearSteps.length;
+			const average = Math.round(rawAverage * 10) / 10;
 			log(`[Dungeon Clear] Boss found in ${steps} step(s)`, COLORS.GREEN);
+			log(`[Dungeon Clear] Average ${average} - ${averageDungeonClearSteps.length} clear(s)`);
 			btn.style.color = COLORS.ORANGE;
 			bossBtn.click();
 			return waitForBossToEnd(btn);
@@ -168,6 +173,7 @@ function startDungeonClear(btn) {
 }
 
 function triggerDungeonClear(btn) {
+	averageDungeonClearSteps = [];
 	autoDungeonClearActivated = !autoDungeonClearActivated;
 	startDungeonClear(btn);
 }
