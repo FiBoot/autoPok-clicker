@@ -1,5 +1,11 @@
 'use strict';
 
+const MS_SECOND = 1000;
+const DUNGEON_TIMESPAN = MS_SECOND / 50;
+const BREED_TIMESPAN = MS_SECOND;
+const CLICK_TIMESPAN = MS_SECOND / 500;
+const MAX_BREED_QUEUE = 2;
+
 const COLORS = {
 	WHITE: '#FFF',
 	GREEN: '#3F1',
@@ -8,9 +14,9 @@ const COLORS = {
 };
 const DOM_IDS = {
 	MAIN_DIV: 'POKEMON_ADDIN_MAIN_DIV',
-	AUTO_BTN: 'AUTO_BTN',
-	TURBO_BTN: 'TURBO_BTN',
 	DOCK_BTN: 'DOCK_BTN',
+	AUTO_BTN: 'AUTO_BTN',
+	DUNGEON_BTN: 'DUNGEON_BTN',
 };
 const BTN_STYLE = `
 	margin-right: 6px;
@@ -22,11 +28,9 @@ const BTN_STYLE = `
 	font-size: 16px;
 	color: #FFF;
 `;
-const CLICK_TIMESPAN = 2;
-const BREED_TIMESPAN = 1000;
-const MAX_BREED_QUEUE = 4;
 let autoBreedActivated = false;
 let autoClickerActivated = false;
+let autoDungeonClearActivated = false;
 let breedInterval, clickInterval;
 
 function log(message, color = COLORS.ORANGE) {
@@ -35,6 +39,17 @@ function log(message, color = COLORS.ORANGE) {
 	const formatTime = `${date.getHours()}:${date.getMinutes()}:${date.getSeconds()}`;
 	const logStyle = `color: ${color}; font-weight: bold;`;
 	console.log(`[${formatDate} ${formatTime}] %c${message}.`, logStyle);
+}
+
+function btnColorTimeout(button, color = COLORS.RED) {
+	button.style.color = color;
+	setTimeout(() => {
+		button.style.color = COLORS.WHITE;
+	}, MS_SECOND * 5);
+}
+
+function hasClass(elem, className) {
+	return elem.className.indexOf(className) >= 0;
 }
 
 function triggerClick(elem) {
@@ -59,22 +74,22 @@ function autoBreed() {
 	}
 }
 
-function triggerAutoBreed(event) {
+function triggerAutoBreed(btn) {
 	autoBreedActivated = !autoBreedActivated;
-	event.srcElement.style.color = autoBreedActivated ? COLORS.GREEN : COLORS.WHITE;
+	btn.style.color = autoBreedActivated ? COLORS.GREEN : COLORS.WHITE;
 	clearInterval(breedInterval);
-	log(autoBreedActivated ? `Auto-breed start at ${1000 / BREED_TIMESPAN} breed/sec` : `stopped`);
+	log(autoBreedActivated ? `Auto-breed start at ${MS_SECOND / BREED_TIMESPAN} breed/sec` : `stopped`);
 	if (autoBreedActivated) {
 		breedInterval = setInterval(() => {
-			event.srcElement.style.color = autoBreed();
+			btn.style.color = autoBreed();
 		}, BREED_TIMESPAN);
-		event.srcElement.style.color = autoBreed();
+		btn.style.color = autoBreed();
 	}
 }
 
-function triggerAutoClick(event) {
+function triggerAutoClick(btn) {
 	autoClickerActivated = !autoClickerActivated;
-	event.srcElement.style.color = autoClickerActivated ? COLORS.GREEN : COLORS.WHITE;
+	btn.style.color = autoClickerActivated ? COLORS.GREEN : COLORS.WHITE;
 	clearInterval(clickInterval);
 	if (autoClickerActivated) {
 		clickInterval = setInterval(
@@ -82,19 +97,79 @@ function triggerAutoClick(event) {
 			CLICK_TIMESPAN
 		);
 	}
-	log(autoClickerActivated ? `Auto-click start at ${1000 / CLICK_TIMESPAN} click/sec` : `stopped`);
+	log(autoClickerActivated ? `Auto-click start at ${MS_SECOND / CLICK_TIMESPAN} click/sec` : `stopped`);
 }
 
-function setPokemonRank(node, rank) {
-	const span = node.querySelector('span');
-	const matches = /^([\w() \-]+)( #)?/.exec(span.innerHTML);
-	if (matches && matches.length > 1) {
-		span.innerHTML = `${matches[1]} <b style="color: ${COLORS.GREEN}">#${rank}</b>`;
+function waitForBossToEnd(btn) {
+	setTimeout(
+		() =>
+			document.querySelector('#battleContainer img.enemy, #battleContainer img.pokeball-animated')
+				? waitForBossToEnd(btn)
+				: startDungeonClear(btn),
+		DUNGEON_TIMESPAN
+	);
+}
+
+function autoDungeonClear(
+	btn,
+	nodes,
+	steps = 0,
+	pos = nodes.length - Math.floor(Math.sqrt(nodes.length) / 2) - 1,
+	dirIndex = 0
+) {
+	// process only when no enemy
+	if (!document.querySelector('#battleContainer img.enemy, #battleContainer img.pokeball-animated')) {
+		const bossBtn = document.querySelector('#battleContainer button.dungeon-button');
+		if (bossBtn) {
+			log(`[Dungeon Clear] Boss found in ${steps}`, COLORS.GREEN);
+			btn.style.color = COLORS.ORANGE;
+			bossBtn.click();
+			return waitForBossToEnd(btn);
+		}
+		const sideSize = Math.sqrt(nodes.length);
+		const dir = [1, -sideSize, -1, sideSize][dirIndex % 4];
+		if (pos + dir >= 0 && pos + dir < nodes.length && hasClass(nodes[pos + dir], 'tile-invisible')) {
+			pos += dir;
+			nodes[pos].click();
+			steps += 1;
+		} else {
+			dirIndex += 1;
+		}
+	} else {
+		log('[Dungeon Clear] waiting for enemy...', COLORS.RED);
+	}
+	setTimeout(() => autoDungeonClear(btn, nodes, steps, pos, dirIndex), DUNGEON_TIMESPAN);
+}
+
+function startDungeonClear(btn) {
+	btn.style.color = COLORS.WHITE;
+	if (!autoDungeonClearActivated) return;
+	const dungeonStartBtn = document.querySelector('#townView button.btn-success');
+	if (dungeonStartBtn) {
+		btn.style.color = COLORS.GREEN;
+		dungeonStartBtn.click();
+		setTimeout(() => {
+			const nodes = document.querySelectorAll('#dungeonMap td');
+			if (nodes && nodes.length) {
+				autoDungeonClear(btn, nodes);
+			} else {
+				autoDungeonClearActivated = false;
+				btnColorTimeout(btn);
+			}
+		}, DUNGEON_TIMESPAN);
+	} else {
+		autoDungeonClearActivated = false;
+		btnColorTimeout(btn);
 	}
 }
 
+function triggerDungeonClear(btn) {
+	autoDungeonClearActivated = !autoDungeonClearActivated;
+	startDungeonClear(btn);
+}
+
 function addDockShortcut() {
-	if (document.querySelector(`button#${DOM_IDS.DOCK_BTN}`)) return;
+	if (document.querySelector(`button#${DOM_IDS.DOCK_BTN}`)) return 0;
 
 	const dockShortcutHtml = `<tr><td class="p-0"><button id="${DOM_IDS.DOCK_BTN}" class="btn btn-block btn-info m-0">Dock</button></td></tr>`;
 	const shortcutTable = document.querySelector('#shortcutsBody > table > tbody');
@@ -102,32 +177,16 @@ function addDockShortcut() {
 	shortcutTable.querySelector(`#${DOM_IDS.DOCK_BTN}`).onclick = (event) => {
 		document.querySelector('[data-town=Dock]').dispatchEvent(new Event('click'));
 	};
+	return 1;
 }
 
-function setUpRanking(event) {
-	const nodes = document.querySelectorAll('#breeding-pokemon li');
-	for (const node of nodes) {
-		const src = node.querySelector('img').src;
-		const matches = /\/(\d+\.\d+)\.png$/.exec(src) || /\/(\d+)\.png$/.exec(src);
-		const pokemonNumber = matches && matches.length > 1 ? matches[1] : 0;
-		const pokemonRank = POKEMON_RANKING.indexOf(pokemonNumber) + 1;
-		if (pokemonRank > 0) {
-			setPokemonRank(node, pokemonRank);
+function startTryAddDockShortcut() {
+	const interval = setInterval(() => {
+		if (addDockShortcut()) {
+			log('Dock shortcut added');
+			clearInterval(interval);
 		}
-	}
-
-	if (nodes.length) {
-		event.srcElement.innerHTML = nodes.length;
-		event.srcElement.style.color = COLORS.GREEN;
-		setTimeout(() => {
-			event.srcElement.innerHTML = 'Rank';
-			event.srcElement.style.color = COLORS.WHITE;
-		}, 1000 * 5); // 5 sec
-		log(`${nodes.length} ranks successfully added`);
-	} else {
-		event.srcElement.style.color = COLORS.RED;
-		log(`Can't find list -> Open Hatchery List once first !`);
-	}
+	}, MS_SECOND);
 }
 
 function main() {
@@ -141,21 +200,19 @@ function main() {
 	`;
 	document.body.appendChild(mainDiv);
 
-	// RANK BTN
-	const rankBtn = document.createElement('button');
-	rankBtn.innerHTML = 'Rank';
-	rankBtn.style.cssText = BTN_STYLE;
-	rankBtn.onclick = (event) => {
-		addDockShortcut();
-		setUpRanking(event);
-	};
-	mainDiv.append(rankBtn);
+	// DUNGEON BTN
+	const dungBtn = document.createElement('button');
+	dungBtn.id = DOM_IDS.AUTO_BTN;
+	dungBtn.innerHTML = 'Clear';
+	dungBtn.style.cssText = BTN_STYLE;
+	dungBtn.onclick = (event) => triggerDungeonClear(event.target);
+	mainDiv.append(dungBtn);
 
 	// BREED BTN
 	const breedBtn = document.createElement('button');
 	breedBtn.innerHTML = 'Breed';
 	breedBtn.style.cssText = BTN_STYLE;
-	breedBtn.onclick = (event) => triggerAutoBreed(event);
+	breedBtn.onclick = (event) => triggerAutoBreed(event.target);
 	mainDiv.append(breedBtn);
 
 	// AUTO BTN
@@ -163,10 +220,12 @@ function main() {
 	autoBtn.id = DOM_IDS.AUTO_BTN;
 	autoBtn.innerHTML = 'Auto';
 	autoBtn.style.cssText = BTN_STYLE;
-	autoBtn.onclick = (event) => triggerAutoClick(event);
+	autoBtn.onclick = (event) => triggerAutoClick(event.target);
 	mainDiv.append(autoBtn);
 
 	log('Pokeclicker Addin loaded');
+
+	startTryAddDockShortcut();
 }
 
 main();

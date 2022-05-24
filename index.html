@@ -29,6 +29,213 @@
 	</ul>
 </div>
 
+<div id="townView">
+	<button class="btn btn-success">Start</button>
+</div>
+
+<div id="dungeonMap" class="card sortable-disabled border-secondary mb-3 dungeon no-select">
+	<div class="card-header p-0">
+		<span data-bind="text: DungeonRunner.dungeon.name">Dark Cave</span>
+	</div>
+	<div class="card-body p-0 text-center">
+		<table class="dungeon-board">
+			<tbody data-bind="foreach: DungeonRunner.map.board()">
+				<tr data-bind="foreach: $data">
+					<td
+						data-bind=" click: function(){DungeonRunner.map.moveToCoordinates($context.$index(), $parentContext.$index()) }, attr: { class: $data.cssClass}"
+						class="tile tile-invisible"
+					></td>
+
+					<td
+						data-bind=" click: function(){DungeonRunner.map.moveToCoordinates($context.$index(), $parentContext.$index()) }, attr: { class: $data.cssClass}"
+						class="tile tile-invisible"
+					></td>
+
+					<td
+						data-bind=" click: function(){DungeonRunner.map.moveToCoordinates($context.$index(), $parentContext.$index()) }, attr: { class: $data.cssClass}"
+						class="tile tile-visited tile-empty"
+					></td>
+
+					<td
+						data-bind=" click: function(){DungeonRunner.map.moveToCoordinates($context.$index(), $parentContext.$index()) }, attr: { class: $data.cssClass}"
+						class="tile tile-visited tile-empty"
+					></td>
+
+					<td
+						data-bind=" click: function(){DungeonRunner.map.moveToCoordinates($context.$index(), $parentContext.$index()) }, attr: { class: $data.cssClass}"
+						class="tile tile-invisible"
+					></td>
+
+					<td
+						data-bind=" click: function(){DungeonRunner.map.moveToCoordinates($context.$index(), $parentContext.$index()) }, attr: { class: $data.cssClass}"
+						class="tile tile-invisible"
+					></td>
+				</tr>
+
+				<tr data-bind="foreach: $data">
+					<td
+						data-bind=" click: function(){DungeonRunner.map.moveToCoordinates($context.$index(), $parentContext.$index()) }, attr: { class: $data.cssClass}"
+						class="tile tile-invisible"
+					></td>
+
+					<td
+						data-bind=" click: function(){DungeonRunner.map.moveToCoordinates($context.$index(), $parentContext.$index()) }, attr: { class: $data.cssClass}"
+						class="tile tile-player"
+					></td>
+
+					<td
+						data-bind=" click: function(){DungeonRunner.map.moveToCoordinates($context.$index(), $parentContext.$index()) }, attr: { class: $data.cssClass}"
+						class="tile tile-visited tile-boss"
+					></td>
+
+					<td
+						data-bind=" click: function(){DungeonRunner.map.moveToCoordinates($context.$index(), $parentContext.$index()) }, attr: { class: $data.cssClass}"
+						class="tile tile-visited tile-empty"
+					></td>
+
+					<td
+						data-bind=" click: function(){DungeonRunner.map.moveToCoordinates($context.$index(), $parentContext.$index()) }, attr: { class: $data.cssClass}"
+						class="tile tile-invisible"
+					></td>
+
+					<td
+						data-bind=" click: function(){DungeonRunner.map.moveToCoordinates($context.$index(), $parentContext.$index()) }, attr: { class: $data.cssClass}"
+						class="tile tile-invisible"
+					></td>
+				</tr>
+
+				<tr data-bind="foreach: $data">
+					<td
+						data-bind=" click: function(){DungeonRunner.map.moveToCoordinates($context.$index(), $parentContext.$index()) }, attr: { class: $data.cssClass}"
+						class="tile tile-invisible"
+					></td>
+
+					<td
+						data-bind=" click: function(){DungeonRunner.map.moveToCoordinates($context.$index(), $parentContext.$index()) }, attr: { class: $data.cssClass}"
+						class="tile tile-visited tile-chest"
+					></td>
+
+					<td
+						data-bind=" click: function(){DungeonRunner.map.moveToCoordinates($context.$index(), $parentContext.$index()) }, attr: { class: $data.cssClass}"
+						class="tile tile-visited tile-empty"
+					></td>
+
+					<td
+						data-bind=" click: function(){DungeonRunner.map.moveToCoordinates($context.$index(), $parentContext.$index()) }, attr: { class: $data.cssClass}"
+						class="tile tile-visited tile-chest"
+					></td>
+
+					<td
+						data-bind=" click: function(){DungeonRunner.map.moveToCoordinates($context.$index(), $parentContext.$index()) }, attr: { class: $data.cssClass}"
+						class="tile tile-invisible"
+					></td>
+
+					<td
+						data-bind=" click: function(){DungeonRunner.map.moveToCoordinates($context.$index(), $parentContext.$index()) }, attr: { class: $data.cssClass}"
+						class="tile tile-invisible"
+					></td>
+				</tr>
+
+				<tr data-bind="foreach: $data">
+					<td
+						data-bind=" click: function(){DungeonRunner.map.moveToCoordinates($context.$index(), $parentContext.$index()) }, attr: { class: $data.cssClass}"
+						class="tile tile-invisible"
+					></td>
+
+					<td
+						data-bind=" click: function(){DungeonRunner.map.moveToCoordinates($context.$index(), $parentContext.$index()) }, attr: { class: $data.cssClass}"
+						class="tile tile-visited tile-chest"
+					></td>
+
+					<td
+						data-bind=" click: function(){DungeonRunner.map.moveToCoordinates($context.$index(), $parentContext.$index()) }, attr: { class: $data.cssClass}"
+						class="tile tile-visited tile-chest"
+					></td>
+
+					<td
+						data-bind=" click: function(){DungeonRunner.map.moveToCoordinates($context.$index(), $parentContext.$index()) }, attr: { class: $data.cssClass}"
+						class="tile tile-visited tile-empty"
+					></td>
+
+					<td
+						data-bind=" click: function(){DungeonRunner.map.moveToCoordinates($context.$index(), $parentContext.$index()) }, attr: { class: $data.cssClass}"
+						class="tile tile-invisible"
+					></td>
+
+					<td
+						data-bind=" click: function(){DungeonRunner.map.moveToCoordinates($context.$index(), $parentContext.$index()) }, attr: { class: $data.cssClass}"
+						class="tile tile-invisible"
+					></td>
+				</tr>
+
+				<tr data-bind="foreach: $data">
+					<td
+						data-bind=" click: function(){DungeonRunner.map.moveToCoordinates($context.$index(), $parentContext.$index()) }, attr: { class: $data.cssClass}"
+						class="tile tile-invisible"
+					></td>
+
+					<td
+						data-bind=" click: function(){DungeonRunner.map.moveToCoordinates($context.$index(), $parentContext.$index()) }, attr: { class: $data.cssClass}"
+						class="tile tile-visited tile-empty"
+					></td>
+
+					<td
+						data-bind=" click: function(){DungeonRunner.map.moveToCoordinates($context.$index(), $parentContext.$index()) }, attr: { class: $data.cssClass}"
+						class="tile tile-visited tile-empty"
+					></td>
+
+					<td
+						data-bind=" click: function(){DungeonRunner.map.moveToCoordinates($context.$index(), $parentContext.$index()) }, attr: { class: $data.cssClass}"
+						class="tile tile-visited tile-empty"
+					></td>
+
+					<td
+						data-bind=" click: function(){DungeonRunner.map.moveToCoordinates($context.$index(), $parentContext.$index()) }, attr: { class: $data.cssClass}"
+						class="tile tile-invisible"
+					></td>
+
+					<td
+						data-bind=" click: function(){DungeonRunner.map.moveToCoordinates($context.$index(), $parentContext.$index()) }, attr: { class: $data.cssClass}"
+						class="tile tile-invisible"
+					></td>
+				</tr>
+
+				<tr data-bind="foreach: $data">
+					<td
+						data-bind=" click: function(){DungeonRunner.map.moveToCoordinates($context.$index(), $parentContext.$index()) }, attr: { class: $data.cssClass}"
+						class="tile tile-invisible"
+					></td>
+
+					<td
+						data-bind=" click: function(){DungeonRunner.map.moveToCoordinates($context.$index(), $parentContext.$index()) }, attr: { class: $data.cssClass}"
+						class="tile tile-visited tile-empty"
+					></td>
+
+					<td
+						data-bind=" click: function(){DungeonRunner.map.moveToCoordinates($context.$index(), $parentContext.$index()) }, attr: { class: $data.cssClass}"
+						class="tile tile-visited tile-empty"
+					></td>
+
+					<td
+						data-bind=" click: function(){DungeonRunner.map.moveToCoordinates($context.$index(), $parentContext.$index()) }, attr: { class: $data.cssClass}"
+						class="tile tile-visited tile-entrance"
+					></td>
+
+					<td
+						data-bind=" click: function(){DungeonRunner.map.moveToCoordinates($context.$index(), $parentContext.$index()) }, attr: { class: $data.cssClass}"
+						class="tile tile-invisible"
+					></td>
+
+					<td
+						data-bind=" click: function(){DungeonRunner.map.moveToCoordinates($context.$index(), $parentContext.$index()) }, attr: { class: $data.cssClass}"
+						class="tile tile-boss"
+					></td>
+				</tr>
+			</tbody>
+		</table>
+	</div>
+</div>
+
 <div id="shortcutsBody">
 	<table>
 		<tbody></tbody>
