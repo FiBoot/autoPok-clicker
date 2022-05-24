@@ -125,7 +125,7 @@ function autoDungeonClear(
 		}
 		const bossBtn = document.querySelector('#battleContainer button.dungeon-button');
 		if (bossBtn) {
-			log(`[Dungeon Clear] Boss found in ${steps}`, COLORS.GREEN);
+			log(`[Dungeon Clear] Boss found in ${steps} step(s)`, COLORS.GREEN);
 			btn.style.color = COLORS.ORANGE;
 			bossBtn.click();
 			return waitForBossToEnd(btn);
