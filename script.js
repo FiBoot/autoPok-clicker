@@ -112,13 +112,17 @@ function waitForBossToEnd(btn) {
 
 function autoDungeonClear(
 	btn,
-	nodes,
+	tiles,
 	steps = 0,
-	pos = nodes.length - Math.floor(Math.sqrt(nodes.length) / 2) - 1,
+	pos = tiles.length - Math.floor(Math.sqrt(tiles.length) / 2) - 1,
 	dirIndex = 0
 ) {
 	// process only when no enemy
 	if (!document.querySelector('#battleContainer img.enemy, #battleContainer img.pokeball-animated')) {
+		const bossTile = document.querySelector('#dungeonMap td.tile-boss');
+		if (bossTile) {
+			bossTile.click();
+		}
 		const bossBtn = document.querySelector('#battleContainer button.dungeon-button');
 		if (bossBtn) {
 			log(`[Dungeon Clear] Boss found in ${steps}`, COLORS.GREEN);
@@ -126,11 +130,11 @@ function autoDungeonClear(
 			bossBtn.click();
 			return waitForBossToEnd(btn);
 		}
-		const sideSize = Math.sqrt(nodes.length);
+		const sideSize = Math.sqrt(tiles.length);
 		const dir = [1, -sideSize, -1, sideSize][dirIndex % 4];
-		if (pos + dir >= 0 && pos + dir < nodes.length && hasClass(nodes[pos + dir], 'tile-invisible')) {
+		if (pos + dir >= 0 && pos + dir < tiles.length && !hasClass(tiles[pos + dir], 'tile-visited')) {
 			pos += dir;
-			nodes[pos].click();
+			tiles[pos].click();
 			steps += 1;
 		} else {
 			dirIndex += 1;
@@ -138,7 +142,7 @@ function autoDungeonClear(
 	} else {
 		log('[Dungeon Clear] waiting for enemy...', COLORS.RED);
 	}
-	setTimeout(() => autoDungeonClear(btn, nodes, steps, pos, dirIndex), DUNGEON_TIMESPAN);
+	setTimeout(() => autoDungeonClear(btn, tiles, steps, pos, dirIndex), DUNGEON_TIMESPAN);
 }
 
 function startDungeonClear(btn) {
@@ -149,9 +153,9 @@ function startDungeonClear(btn) {
 		btn.style.color = COLORS.GREEN;
 		dungeonStartBtn.click();
 		setTimeout(() => {
-			const nodes = document.querySelectorAll('#dungeonMap td');
-			if (nodes && nodes.length) {
-				autoDungeonClear(btn, nodes);
+			const tiles = document.querySelectorAll('#dungeonMap td');
+			if (tiles && tiles.length) {
+				autoDungeonClear(btn, tiles);
 			} else {
 				autoDungeonClearActivated = false;
 				btnColorTimeout(btn);
