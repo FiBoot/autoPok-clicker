@@ -247,7 +247,7 @@ function main() {
 	// AUTO BTN
 	const autoBtn = document.createElement('button');
 	autoBtn.id = DOM_IDS.AUTO_BTN;
-	autoBtn.innerHTML = 'Auto';
+	autoBtn.innerHTML = 'Click';
 	autoBtn.style.cssText = BTN_STYLE;
 	autoBtn.onclick = (event) => triggerAutoClick(event.target);
 	mainDiv.append(autoBtn);
