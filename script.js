@@ -15,8 +15,9 @@ const COLORS = {
 const DOM_IDS = {
 	MAIN_DIV: 'POKEMON_ADDIN_MAIN_DIV',
 	DOCK_BTN: 'DOCK_BTN',
-	AUTO_BTN: 'AUTO_BTN',
+	DUNGEON_COUT: 'DUNGEON_COUT',
 	DUNGEON_BTN: 'DUNGEON_BTN',
+	AUTO_BTN: 'AUTO_BTN',
 };
 const BTN_STYLE = `
 	margin-right: 6px;
@@ -31,6 +32,7 @@ const BTN_STYLE = `
 let autoBreedActivated = false;
 let autoClickerActivated = false;
 let autoDungeonClearActivated = false;
+let dungeonCount = 100;
 let averageDungeonClearSteps;
 let breedInterval, clickInterval;
 
@@ -79,7 +81,7 @@ function triggerAutoBreed(btn) {
 	autoBreedActivated = !autoBreedActivated;
 	btn.style.color = autoBreedActivated ? COLORS.GREEN : COLORS.WHITE;
 	clearInterval(breedInterval);
-	log(autoBreedActivated ? `[Auto Breed] Start at ${MS_SECOND / BREED_TIMESPAN} breed/sec` : `stopped`);
+	log(`[Auto Breed] ${autoBreedActivated ? `Start at ${MS_SECOND / BREED_TIMESPAN} breed/sec` : `stopped`}`);
 	if (autoBreedActivated) {
 		breedInterval = setInterval(() => {
 			btn.style.color = autoBreed();
@@ -103,7 +105,7 @@ function triggerAutoClick(btn) {
 
 function stopDungeonClear(btn, error = null) {
 	if (error) {
-		log(`[Dungeon Clear] ${error}`);
+		log(`[Dungeon Clear] Error: ${error}`, COLORS.RED);
 	}
 	autoDungeonClearActivated = false;
 	return btnColorTimeout(btn);
@@ -136,36 +138,32 @@ function startDungeonBoss(btn, bossTile, steps) {
 }
 
 function autoDungeonClear(btn, tiles, steps = 0, pos = tiles.length - Math.floor(Math.sqrt(tiles.length) / 2) - 1) {
+	if (!document.querySelector('#dungeonMap')) return stopDungeonClear(btn, 'map not found');
 	// process only when no enemy
 	if (!document.querySelector('#battleContainer img.enemy, #battleContainer img.pokeball-animated')) {
+		// try finding boss tile
 		const bossTile = document.querySelector('#dungeonMap td.tile-boss');
-		if (bossTile) {
-			return startDungeonBoss(btn, bossTile, steps);
-		}
+		if (bossTile) return startDungeonBoss(btn, bossTile, steps);
+		// look for cardinal possibilities
 		const sideSize = Math.sqrt(tiles.length);
-		const nextPos = [1, -sideSize, -1, sideSize];
+		const nextPos = [1, sideSize, -sideSize, -1];
 		const cardinalTiles = [
 			pos + 1 < tiles.length && (pos + 1) % sideSize ? tiles[pos + 1] : null,
+			pos + sideSize < tiles.length ? tiles[pos + sideSize] : null,
 			pos - sideSize >= 0 ? tiles[pos - sideSize] : null,
 			pos - 1 >= 0 && pos % sideSize ? tiles[pos - 1] : null,
-			pos + sideSize < tiles.length ? tiles[pos + sideSize] : null,
 		];
-		let index = 0;
+		let posIndex = 0;
 		let nextTile = cardinalTiles.find((tile, i) => {
-			index = i;
+			posIndex = i;
 			return tile && !hasClass(tile, 'tile-visited');
 		});
 		if (!nextTile) {
-			log(`[Dungeon Clear] No adjacent tile finding new unvisited tile`, COLORS.ORANGE);
-			nextTile = document.querySelector('#dungeonMap td.tile-invisible');
-			if (!nextTile) {
-				return stopDungeonClear(btn, 'Error: no new unvisited tile found');
-			}
-			pos = tiles.findIndex(nextTile);
-		} else {
-			pos += nextPos[index];
+			log('[Dungeon Clear] No new unvisited tile found, going start tile', COLORS.RED);
+			nextTile = tiles[tiles.length - Math.floor(Math.sqrt(tiles.length) / 2)];
 		}
 		nextTile.click();
+		pos += nextPos[posIndex];
 		steps += 1;
 	}
 	setTimeout(() => autoDungeonClear(btn, tiles, steps, pos), DUNGEON_TIMESPAN);
@@ -173,7 +171,12 @@ function autoDungeonClear(btn, tiles, steps = 0, pos = tiles.length - Math.floor
 
 function startDungeonClear(btn) {
 	btn.style.color = COLORS.WHITE;
+	document.querySelector(`#${DOM_IDS.MAIN_DIV} #${DOM_IDS.DUNGEON_COUT}`).value = dungeonCount;
 	if (!autoDungeonClearActivated) return;
+	if (dungeonCount-- < 1) {
+		autoDungeonClearActivated = false;
+		return log('[Dungeon Clear] Count is depleted, stopping');
+	}
 	const dungeonStartBtn = document.querySelector('#townView button.btn-success');
 	if (dungeonStartBtn) {
 		btn.style.color = COLORS.GREEN;
@@ -183,11 +186,11 @@ function startDungeonClear(btn) {
 			if (tiles && tiles.length) {
 				autoDungeonClear(btn, tiles);
 			} else {
-				stopDungeonClear(btn, 'Error: no map found');
+				stopDungeonClear(btn, 'no map found');
 			}
 		}, DUNGEON_TIMESPAN);
 	} else {
-		stopDungeonClear(btn, 'Error: no dungeon button found');
+		stopDungeonClear(btn, 'no dungeon button found');
 	}
 }
 
@@ -229,9 +232,19 @@ function main() {
 	`;
 	document.body.appendChild(mainDiv);
 
+	// DUNGEON COUNT
+	const dungCout = document.createElement('input');
+	dungCout.id = DOM_IDS.DUNGEON_COUT;
+	dungCout.type = 'number';
+	dungCout.value = dungeonCount;
+	dungCout.innerHTML = 'Clear';
+	dungCout.style.cssText = BTN_STYLE + `width: 100px;`;
+	dungCout.onchange = (event) => (dungeonCount = event.target.value);
+	mainDiv.append(dungCout);
+
 	// DUNGEON BTN
 	const dungBtn = document.createElement('button');
-	dungBtn.id = DOM_IDS.AUTO_BTN;
+	dungBtn.id = DOM_IDS.DUNGEON_BTN;
 	dungBtn.innerHTML = 'Clear';
 	dungBtn.style.cssText = BTN_STYLE;
 	dungBtn.onclick = (event) => triggerDungeonClear(event.target);
