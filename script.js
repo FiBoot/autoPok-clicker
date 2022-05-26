@@ -127,7 +127,7 @@ function startDungeonBoss(btn, bossTile, steps) {
 	if (bossBtn) {
 		averageDungeonClearSteps.push(steps);
 		const rawAverage = averageDungeonClearSteps.reduce((a, b) => a + b, 0) / averageDungeonClearSteps.length;
-		const average = Math.round(rawAverage * 10) / 10;
+		const average = Math.round(rawAverage * 100) / 100;
 		log(`[Dungeon Clear] Boss found in ${steps} step(s)`, COLORS.GREEN);
 		log(`[Dungeon Clear] Average steps: ${average} (count: ${averageDungeonClearSteps.length})`);
 		btn.style.color = COLORS.ORANGE;
