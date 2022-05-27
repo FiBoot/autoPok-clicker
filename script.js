@@ -169,6 +169,13 @@ function autoDungeonClear(btn, tiles, steps = 0, pos = tiles.length - Math.floor
 	setTimeout(() => autoDungeonClear(btn, tiles, steps, pos), DUNGEON_TIMESPAN);
 }
 
+function autoGymClear(btn) {
+	if (!document.querySelector('#battleContainer #gymGoContainer')) {
+		return startDungeonClear(btn);
+	}
+	setTimeout(() => autoGymClear(btn), DUNGEON_TIMESPAN);
+}
+
 function startDungeonClear(btn) {
 	btn.style.color = COLORS.WHITE;
 	document.querySelector(`#${DOM_IDS.MAIN_DIV} #${DOM_IDS.DUNGEON_COUT}`).value = dungeonCount;
@@ -177,7 +184,7 @@ function startDungeonClear(btn) {
 		autoDungeonClearActivated = false;
 		return log('[Dungeon Clear] Count is depleted, stopping');
 	}
-	const dungeonStartBtn = document.querySelector('#townView button.btn-success');
+	const dungeonStartBtn = document.querySelector('#townView .list-group button.btn-success');
 	if (dungeonStartBtn) {
 		btn.style.color = COLORS.GREEN;
 		dungeonStartBtn.click();
@@ -185,6 +192,8 @@ function startDungeonClear(btn) {
 			const tiles = document.querySelectorAll('#dungeonMap td');
 			if (tiles && tiles.length) {
 				autoDungeonClear(btn, tiles);
+			} else if (document.querySelector('#battleContainer #gymGoContainer')) {
+				autoGymClear(btn);
 			} else {
 				stopDungeonClear(btn, 'no map found');
 			}
