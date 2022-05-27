@@ -160,7 +160,7 @@ function autoDungeonClear(btn, tiles, steps = 0, pos = tiles.length - Math.floor
 		});
 		if (!nextTile) {
 			log('[Dungeon Clear] No new unvisited tile found, going start tile', COLORS.RED);
-			nextTile = tiles[tiles.length - Math.floor(Math.sqrt(tiles.length) / 2)];
+			nextTile = tiles[tiles.length - Math.ceil(Math.sqrt(tiles.length) / 2)];
 		}
 		nextTile.click();
 		pos += nextPos[posIndex];
