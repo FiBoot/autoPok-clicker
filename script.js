@@ -1,10 +1,11 @@
 'use strict';
 
 const MS_SECOND = 1000;
+const CLICK_TIMESPAN = MS_SECOND / 50;
 const DUNGEON_TIMESPAN = MS_SECOND / 50;
-const BREED_TIMESPAN = MS_SECOND;
-const CLICK_TIMESPAN = MS_SECOND / 500;
+const BREED_TIMESPAN = MS_SECOND / 5;
 const MAX_BREED_QUEUE = 2;
+const GYM_MAX_NUMBER = 5;
 
 const COLORS = {
 	WHITE: '#FFF',
@@ -16,6 +17,7 @@ const DOM_IDS = {
 	MAIN_DIV: 'POKEMON_ADDIN_MAIN_DIV',
 	DOCK_BTN: 'DOCK_BTN',
 	DUNGEON_COUT: 'DUNGEON_COUT',
+	GYM_SELECT: 'GYM_SELECT',
 	DUNGEON_BTN: 'DUNGEON_BTN',
 	AUTO_BTN: 'AUTO_BTN',
 };
@@ -32,7 +34,8 @@ const BTN_STYLE = `
 let autoBreedActivated = false;
 let autoClickerActivated = false;
 let autoDungeonClearActivated = false;
-let dungeonCount = 100;
+let dungeonCount = 100,
+	selectedGym = 1;
 let averageDungeonClearSteps;
 let breedInterval, clickInterval;
 
@@ -146,12 +149,12 @@ function autoDungeonClear(btn, tiles, steps = 0, pos = tiles.length - Math.floor
 		if (bossTile) return startDungeonBoss(btn, bossTile, steps);
 		// look for cardinal possibilities
 		const sideSize = Math.sqrt(tiles.length);
-		const nextPos = [1, sideSize, -sideSize, -1];
+		const nextPos = [1, -sideSize, -1, sideSize];
 		const cardinalTiles = [
 			pos + 1 < tiles.length && (pos + 1) % sideSize ? tiles[pos + 1] : null,
-			pos + sideSize < tiles.length ? tiles[pos + sideSize] : null,
 			pos - sideSize >= 0 ? tiles[pos - sideSize] : null,
 			pos - 1 >= 0 && pos % sideSize ? tiles[pos - 1] : null,
+			pos + sideSize < tiles.length ? tiles[pos + sideSize] : null,
 		];
 		let posIndex = 0;
 		let nextTile = cardinalTiles.find((tile, i) => {
@@ -184,7 +187,9 @@ function startDungeonClear(btn) {
 		autoDungeonClearActivated = false;
 		return log('[Dungeon Clear] Count is depleted, stopping');
 	}
-	const dungeonStartBtn = document.querySelector('#townView .list-group button.btn-success');
+	const dungeonStartBtn = document.querySelector(
+		`#townView .list-group .btn-block:nth-child(${selectedGym + 1}) button.btn-success`
+	);
 	if (dungeonStartBtn) {
 		btn.style.color = COLORS.GREEN;
 		dungeonStartBtn.click();
@@ -248,7 +253,7 @@ function main() {
 	dungCout.value = dungeonCount;
 	dungCout.innerHTML = 'Clear';
 	dungCout.style.cssText = BTN_STYLE + `width: 100px;`;
-	dungCout.onchange = (event) => (dungeonCount = event.target.value);
+	dungCout.onchange = (event) => (dungeonCount = parseInt(event.target.value));
 	mainDiv.append(dungCout);
 
 	// DUNGEON BTN
@@ -258,6 +263,19 @@ function main() {
 	dungBtn.style.cssText = BTN_STYLE;
 	dungBtn.onclick = (event) => triggerDungeonClear(event.target);
 	mainDiv.append(dungBtn);
+
+	// GYM SELECT
+	const gymSelect = document.createElement('select');
+	gymSelect.id = DOM_IDS.GYM_SELECT;
+	gymSelect.style.cssText = BTN_STYLE;
+	gymSelect.onclick = (event) => (selectedGym = parseInt(event.target.value));
+	mainDiv.append(gymSelect);
+	for (let i = 1; i <= GYM_MAX_NUMBER; i++) {
+		const opt = document.createElement('option');
+		opt.value = i;
+		opt.innerHTML = i;
+		gymSelect.append(opt);
+	}
 
 	// BREED BTN
 	const breedBtn = document.createElement('button');
