@@ -2,7 +2,7 @@
 
 const MS_SECOND = 1000;
 const CLICK_TIMESPAN = MS_SECOND / 50;
-const DUNGEON_TIMESPAN = MS_SECOND / 50;
+const DUNGEON_TIMESPAN = MS_SECOND / 10;
 const BREED_TIMESPAN = MS_SECOND / 5;
 const MAX_BREED_QUEUE = 2;
 const GYM_MAX_NUMBER = 5;
@@ -140,36 +140,35 @@ function startDungeonBoss(btn, bossTile, steps) {
 	setTimeout(() => startDungeonBoss(btn, bossTile, steps), DUNGEON_TIMESPAN);
 }
 
-function autoDungeonClear(btn, tiles, steps = 0, pos = tiles.length - Math.floor(Math.sqrt(tiles.length) / 2) - 1) {
+function autoDungeonClear(btn, tiles, calc, steps = 0) {
 	if (!document.querySelector('#dungeonMap')) return stopDungeonClear(btn, 'map not found');
 	// process only when no enemy
 	if (!document.querySelector('#battleContainer img.enemy, #battleContainer img.pokeball-animated')) {
 		// try finding boss tile
 		const bossTile = document.querySelector('#dungeonMap td.tile-boss');
 		if (bossTile) return startDungeonBoss(btn, bossTile, steps);
-		// look for cardinal possibilities
-		const sideSize = Math.sqrt(tiles.length);
-		const nextPos = [1, -sideSize, -1, sideSize];
-		const cardinalTiles = [
-			pos + 1 < tiles.length && (pos + 1) % sideSize ? tiles[pos + 1] : null,
-			pos - sideSize >= 0 ? tiles[pos - sideSize] : null,
-			pos - 1 >= 0 && pos % sideSize ? tiles[pos - 1] : null,
-			pos + sideSize < tiles.length ? tiles[pos + sideSize] : null,
-		];
-		let posIndex = 0;
-		let nextTile = cardinalTiles.find((tile, i) => {
-			posIndex = i;
-			return tile && !hasClass(tile, 'tile-visited');
-		});
-		if (!nextTile) {
-			log('[Dungeon Clear] No new unvisited tile found, going start tile', COLORS.RED);
-			nextTile = tiles[tiles.length - Math.ceil(Math.sqrt(tiles.length) / 2)];
+		// calc next tile
+		if (calc.y > 0) {
+			calc.y -= 1;
+		} else {
+			calc.y = calc.side - 1;
+			if (calc.x < calc.side) {
+				if (calc.x > 0) {
+					calc.x += calc.dir;
+				} else {
+					calc.x = Math.floor(calc.side / 2) + 1;
+					calc.dir = 1;
+				}
+			} else {
+				log('[Dungeon Clear] No new unvisited tile found, going topleft', COLORS.RED);
+				Object.assign(calc, { x: 0, y: 0 });
+			}
 		}
-		nextTile.click();
-		pos += nextPos[posIndex];
+		const pos = calc.y * calc.side + calc.x;
+		tiles[pos].click();
 		steps += 1;
 	}
-	setTimeout(() => autoDungeonClear(btn, tiles, steps, pos), DUNGEON_TIMESPAN);
+	setTimeout(() => autoDungeonClear(btn, tiles, calc, steps));
 }
 
 function autoGymClear(btn) {
@@ -187,16 +186,18 @@ function startDungeonClear(btn) {
 		autoDungeonClearActivated = false;
 		return log('[Dungeon Clear] Count is depleted, stopping');
 	}
-	const dungeonStartBtn = document.querySelector(
-		`#townView .list-group .btn-block:nth-child(${selectedGym + 1}) button.btn-success`
-	);
+	const dungeonStartBtn =
+		document.querySelector(`#townView .btn-block:nth-child(${selectedGym + 1}) button.btn-success`) ||
+		document.querySelector('#townView .list-group button.btn-success');
 	if (dungeonStartBtn) {
 		btn.style.color = COLORS.GREEN;
 		dungeonStartBtn.click();
 		setTimeout(() => {
 			const tiles = document.querySelectorAll('#dungeonMap td');
 			if (tiles && tiles.length) {
-				autoDungeonClear(btn, tiles);
+				const side = Math.sqrt(tiles.length);
+				const calc = { side, x: side - Math.ceil(side / 2), y: side - 1, dir: -1 };
+				autoDungeonClear(btn, tiles, calc);
 			} else if (document.querySelector('#battleContainer #gymGoContainer')) {
 				autoGymClear(btn);
 			} else {
