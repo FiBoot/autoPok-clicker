@@ -152,20 +152,19 @@ function autoDungeonClear(btn, tiles, calc, steps = 0) {
 			calc.y -= 1;
 		} else {
 			calc.y = calc.side - 1;
-			if (calc.x < calc.side) {
-				if (calc.x > 0) {
-					calc.x += calc.dir;
-				} else {
-					calc.x = Math.floor(calc.side / 2) + 1;
-					calc.dir = 1;
-				}
+			if (calc.x > 0) {
+				calc.x += calc.dir;
 			} else {
-				log('[Dungeon Clear] No new unvisited tile found, going topleft', COLORS.RED);
-				Object.assign(calc, { x: 0, y: 0 });
+				calc.x = Math.floor(calc.side / 2) + 1;
+				calc.dir = 1;
 			}
 		}
-		const pos = calc.y * calc.side + calc.x;
-		tiles[pos].click();
+		let pos = calc.y * calc.side + calc.x;
+		if (pos >= tiles.length) {
+			log('[Dungeon Clear] No new unvisited tile found, going topleft', COLORS.RED);
+			pos = 0;
+		}
+		triggerClick(tiles[pos]);
 		steps += 1;
 	}
 	setTimeout(() => autoDungeonClear(btn, tiles, calc, steps));
@@ -212,6 +211,7 @@ function startDungeonClear(btn) {
 function triggerDungeonClear(btn) {
 	averageDungeonClearSteps = [];
 	autoDungeonClearActivated = !autoDungeonClearActivated;
+	dungeonCount = dungeonCount < 1 ? 1 : dungeonCount || 1;
 	startDungeonClear(btn);
 }
 
