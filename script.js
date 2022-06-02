@@ -202,7 +202,7 @@ function startDungeonClear(btn) {
 			} else {
 				stopDungeonClear(btn, 'no map found');
 			}
-		}, DUNGEON_TIMESPAN);
+		});
 	} else {
 		stopDungeonClear(btn, 'no dungeon button found');
 	}
