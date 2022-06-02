@@ -200,7 +200,8 @@ function startDungeonClear(btn) {
 			} else if (document.querySelector('#battleContainer #gymGoContainer')) {
 				autoGymClear(btn);
 			} else {
-				stopDungeonClear(btn, 'no map found');
+				log('[Dungeon Clear] Map not found, restarting..', COLORS.RED);
+				startDungeonClear(btn);
 			}
 		});
 	} else {
