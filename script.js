@@ -2,7 +2,7 @@
 
 const MS_SECOND = 1000;
 const CLICK_TIMESPAN = MS_SECOND / 50;
-const DUNGEON_TIMESPAN = MS_SECOND / 10;
+const DUNGEON_TIMESPAN = MS_SECOND / 50;
 const BREED_TIMESPAN = MS_SECOND / 5;
 const MAX_BREED_QUEUE = 2;
 const GYM_MAX_NUMBER = 5;
@@ -141,7 +141,10 @@ function startDungeonBoss(btn, bossTile, steps) {
 }
 
 function autoDungeonClear(btn, tiles, calc, steps = 0) {
-	if (!document.querySelector('#dungeonMap')) return stopDungeonClear(btn, 'map not found');
+	if (!document.querySelector('#dungeonMap')) {
+		log('[Dungeon Clear] Map not found, restarting..', COLORS.RED);
+		return startDungeonClear(btn);
+	}
 	// process only when no enemy
 	if (!document.querySelector('#battleContainer img.enemy, #battleContainer img.pokeball-animated')) {
 		// try finding boss tile
@@ -167,7 +170,7 @@ function autoDungeonClear(btn, tiles, calc, steps = 0) {
 		triggerClick(tiles[pos]);
 		steps += 1;
 	}
-	setTimeout(() => autoDungeonClear(btn, tiles, calc, steps));
+	setTimeout(() => autoDungeonClear(btn, tiles, calc, steps), DUNGEON_TIMESPAN);
 }
 
 function autoGymClear(btn) {
@@ -203,7 +206,7 @@ function startDungeonClear(btn) {
 				log('[Dungeon Clear] Map not found, restarting..', COLORS.RED);
 				startDungeonClear(btn);
 			}
-		});
+		}, DUNGEON_TIMESPAN);
 	} else {
 		stopDungeonClear(btn, 'no dungeon button found');
 	}
